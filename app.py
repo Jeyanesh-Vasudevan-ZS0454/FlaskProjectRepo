@@ -57,20 +57,17 @@ def type_error():
         elif isinstance(num1, str) and isinstance(num2, str):
             return num1 + num2
         else:
-            if isinstance(num1, str):
-                try:
-                    num1 = int(num1)
-                except ValueError:
-                    return "Error: Cannot convert num1 to integer"
-            if isinstance(num2, str):
-                try:
-                    num2 = int(num2)
-                except ValueError:
-                    return "Error: Cannot convert num2 to integer"
+            try:
+                num1 = int(num1)
+                num2 = int(num2)
+            except ValueError:
+                return "Error: Cannot convert num1 or num2 to integer"
             if isinstance(num1, int) and isinstance(num2, int):
                 return str(num1 + num2)
             else:
                 return "Error: num1 or num2 is not a valid integer"
+    except TypeError:
+        return "Error: Unsupported operand type(s) for +: 'int' and 'str'"
     except Exception as e:
         return "Error: " + str(e)
 
@@ -125,6 +122,10 @@ def test_error():
 @app.route("/static_error")
 def static_error():
     return "Error: Unsupported operand type(s) for +: 'int' and 'str'", 500
+
+@app.route("/static_type_error", methods=['GET'])
+def static_type_error():
+    return jsonify({"error": "TypeError", "message": "Unsupported operand type(s) for +: 'int' and 'str'", "endpoint": "/static_type_error", "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
 
 if __name__ == "__main__":
     create_tables()
