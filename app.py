@@ -60,16 +60,13 @@ def type_error():
             try:
                 num1 = int(num1)
                 num2 = int(num2)
-            except ValueError:
-                return "Error: Cannot convert num1 or num2 to integer"
-            if isinstance(num1, int) and isinstance(num2, int):
                 return str(num1 + num2)
-            else:
-                return "Error: num1 or num2 is not a valid integer"
+            except ValueError:
+                return jsonify({"error": "ValueError", "message": "Cannot convert num1 or num2 to integer", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
     except TypeError as e:
         return jsonify({"error": type(e).__name__, "message": str(e), "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
     except Exception as e:
-        return "Error: " + str(e)
+        return jsonify({"error": type(e).__name__, "message": str(e), "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
 
 @app.route("/value_error")
 def value_error():
