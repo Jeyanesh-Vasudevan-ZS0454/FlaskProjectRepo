@@ -66,8 +66,8 @@ def type_error():
                 return str(num1 + num2)
             else:
                 return "Error: num1 or num2 is not a valid integer"
-    except TypeError:
-        return "Error: Unsupported operand type(s) for +: 'int' and 'str'"
+    except TypeError as e:
+        return jsonify({"error": type(e).__name__, "message": str(e), "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
     except Exception as e:
         return "Error: " + str(e)
 
@@ -117,11 +117,11 @@ def test():
 
 @app.route("/test_error")
 def test_error():
-    return "Error: Unsupported operand type(s) for +: 'int' and 'str'", 500
+    return jsonify({"error": "TypeError", "message": "Unsupported operand type(s) for +: 'int' and 'str'", "endpoint": "/test_error", "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
 
 @app.route("/static_error")
 def static_error():
-    return "Error: Unsupported operand type(s) for +: 'int' and 'str'", 500
+    return jsonify({"error": "TypeError", "message": "Unsupported operand type(s) for +: 'int' and 'str'", "endpoint": "/static_error", "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
 
 @app.route("/static_type_error", methods=['GET'])
 def static_type_error():
