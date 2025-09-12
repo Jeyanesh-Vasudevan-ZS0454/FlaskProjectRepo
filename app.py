@@ -52,7 +52,7 @@ def type_error():
     num1 = 5
     num2 = "hello"
     if isinstance(num1, int) and isinstance(num2, int):
-        return num1 + num2
+        return str(num1 + num2)
     elif isinstance(num1, str) and isinstance(num2, str):
         return num1 + num2
     else:
