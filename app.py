@@ -56,7 +56,10 @@ def type_error():
     elif isinstance(num1, str) and isinstance(num2, str):
         return num1 + num2
     else:
-        return "Error: Cannot perform operation on different data types"
+        try:
+            return str(int(num1) + int(num2))
+        except ValueError:
+            return "Error: Cannot perform operation on different data types"
 
 @app.route("/value_error")
 def value_error():
