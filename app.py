@@ -63,16 +63,16 @@ def type_error():
                 except ValueError:
                     return "Error: Cannot convert num1 to integer"
             if isinstance(num2, str):
-                if num2.isdigit():
+                try:
                     num2 = int(num2)
-                else:
-                    return "Error: num2 is not a valid integer"
+                except ValueError:
+                    return "Error: Cannot convert num2 to integer"
             if isinstance(num1, int) and isinstance(num2, int):
                 return str(num1 + num2)
             else:
                 return "Error: num1 or num2 is not a valid integer"
     except Exception as e:
-        return "Error: Unsupported operand type(s) for +: 'int' and 'str'"
+        return "Error: " + str(e)
 
 @app.route("/value_error")
 def value_error():
@@ -120,6 +120,10 @@ def test():
 
 @app.route("/test_error")
 def test_error():
+    return "Error: Unsupported operand type(s) for +: 'int' and 'str'", 500
+
+@app.route("/static_error")
+def static_error():
     return "Error: Unsupported operand type(s) for +: 'int' and 'str'", 500
 
 if __name__ == "__main__":
