@@ -58,12 +58,21 @@ def type_error():
     else:
         try:
             if isinstance(num1, str):
-                num1 = int(num1)
+                try:
+                    num1 = int(num1)
+                except ValueError:
+                    return "Error: Cannot convert num1 to integer"
             if isinstance(num2, str):
-                num2 = int(num2)
-            return str(num1 + num2)
-        except ValueError:
-            return "Error: Cannot perform operation on non-numeric data types"
+                try:
+                    num2 = int(num2)
+                except ValueError:
+                    return "Error: Cannot convert num2 to integer"
+            if isinstance(num1, int) and isinstance(num2, int):
+                return str(num1 + num2)
+            else:
+                return str(num1) + str(num2)
+        except Exception as e:
+            return str(e)
 
 @app.route("/value_error")
 def value_error():
