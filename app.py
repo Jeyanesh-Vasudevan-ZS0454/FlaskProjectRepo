@@ -51,12 +51,12 @@ def invalid_operation():
 def type_error():
     num1 = 5
     num2 = "hello"
-    if isinstance(num1, int) and isinstance(num2, int):
-        return str(num1 + num2)
-    elif isinstance(num1, str) and isinstance(num2, str):
-        return num1 + num2
-    else:
-        try:
+    try:
+        if isinstance(num1, int) and isinstance(num2, int):
+            return str(num1 + num2)
+        elif isinstance(num1, str) and isinstance(num2, str):
+            return num1 + num2
+        else:
             if isinstance(num1, str):
                 try:
                     num1 = int(num1)
@@ -71,8 +71,8 @@ def type_error():
                 return str(num1 + num2)
             else:
                 return "Error: num1 or num2 is not a valid integer"
-        except Exception as e:
-            return str(e)
+    except Exception as e:
+        return "Error: Unsupported operand type(s) for +: 'int' and 'str'"
 
 @app.route("/value_error")
 def value_error():
@@ -113,6 +113,14 @@ def get_logs():
     rows = cur.fetchall()
     con.close()
     return jsonify([dict(row) for row in rows])
+
+@app.route("/test")
+def test():
+    return "Test success"
+
+@app.route("/test_error")
+def test_error():
+    return "Error: Unsupported operand type(s) for +: 'int' and 'str'", 500
 
 if __name__ == "__main__":
     create_tables()
