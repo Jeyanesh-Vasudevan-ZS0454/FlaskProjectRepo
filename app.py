@@ -63,14 +63,14 @@ def type_error():
                 except ValueError:
                     return "Error: Cannot convert num1 to integer"
             if isinstance(num2, str):
-                try:
+                if num2.isdigit():
                     num2 = int(num2)
-                except ValueError:
-                    return "Error: Cannot convert num2 to integer"
+                else:
+                    return "Error: num2 is not a valid integer"
             if isinstance(num1, int) and isinstance(num2, int):
                 return str(num1 + num2)
             else:
-                return str(num1) + str(num2)
+                return "Error: num1 or num2 is not a valid integer"
         except Exception as e:
             return str(e)
 
