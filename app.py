@@ -1,3 +1,4 @@
+
 from flask import Flask, jsonify, request
 import sqlite3
 import traceback
@@ -48,7 +49,14 @@ def invalid_operation():
 
 @app.route("/type_error")
 def type_error():
-    return 5 + "hello"  # TypeError
+    num1 = 5
+    num2 = "hello"
+    if isinstance(num1, int) and isinstance(num2, int):
+        return str(num1 + num2)
+    elif isinstance(num1, str) and isinstance(num2, str):
+        return num1 + num2
+    else:
+        return "Error: Cannot perform operation on different data types"
 
 @app.route("/value_error")
 def value_error():
@@ -93,4 +101,3 @@ def get_logs():
 if __name__ == "__main__":
     create_tables()
     app.run(debug=True)
- 
