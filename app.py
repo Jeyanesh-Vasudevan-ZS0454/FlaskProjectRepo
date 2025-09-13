@@ -81,7 +81,8 @@ def type_error():
     except TypeError as e:
         return "Error: Invalid operation. Unsupported operand type(s) for +: 'int' and 'str'. Error details: " + str(e)
     except Exception as e:
-        return f"An error occurred: {str(e)}"@app.route("/value_error")
+        return f"An error occurred: {str(e)}"
+    return "Error: No operation performed."@app.route("/value_error")
 def value_error():
     try:
         num1 = request.args.get("num1", default=5)
