@@ -74,9 +74,15 @@ def type_error():
     num1 = request.args.get("num1", default=5)
     num2 = request.args.get("num2", default=3)
 
-    return str(num1 + num2)
-    
-@app.route("/value_error")
+    try:
+        num1 = int(num1)
+        num2 = int(num2)
+    except ValueError:
+        return "Invalid input: num1 and num2 must be integers"
+
+    if not isinstance(num1, int) or not isinstance(num2, int):
+        return "Static Error: Input parameters are not integers"
+    return str(num1 + num2)@app.route("/value_error")
 def value_error():
     try:
         num1 = request.args.get("num1", default=5)
