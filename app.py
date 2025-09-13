@@ -63,9 +63,12 @@ def index_out_of_range():
 def invalid_operation():
     num1 = request.json.get("num1", 5)
     num2 = request.json.get("num2", 3)
-    x = num1 / num2  # ZeroDivisionError if num2 = 0
+    if num2 is None:
+        return "Error: num2 is None"
+    if num2 == 0:
+        return "Error: Division by zero"
+    x = num1 / num2 
     return str(x)
-
 
 @app.route("/type_error", methods=["POST"])
 def type_error():
@@ -103,7 +106,6 @@ def hit_api(inserted_id):
         print(e)
 # ---------- Global Error Handler ----------
 from werkzeug.exceptions import HTTPException
-import threading
 
 @app.errorhandler(Exception)
 def handle_exception(e):
@@ -129,9 +131,9 @@ def handle_exception(e):
     con.close()
 
     print("Inserted row ID:", inserted_id)
-    threading.Thread(target=hit_api, args=(inserted_id,), daemon=True).start()
+
     # 🔥 Only call external API for API/runtime errors
-    # hit_api(inserted_id)
+    hit_api(inserted_id)
 
     return jsonify({
         "error": exc_type,
