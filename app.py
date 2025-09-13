@@ -71,12 +71,12 @@ def invalid_operation():
 
 @app.route("/type_error")
 def type_error():
-    num1 = request.args.get("num1", default=5)
-    num2 = request.args.get("num2", default=3)
+    num1 = request.args.get("num1", default=5, type=int)
+    num2 = request.args.get("num2", default=3, type=int)
 
-    return str(num1 + num2)
-    
-@app.route("/value_error")
+    if num1 is None or num2 is None:
+        return "Invalid input: num1 and num2 must be integers"
+    return str(num1 + num2)@app.route("/value_error")
 def value_error():
     try:
         num1 = request.args.get("num1", default=5)
