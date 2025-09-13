@@ -77,6 +77,8 @@ def type_error():
         if not num1.isdigit() or not num2.isdigit():
             return "Error: Invalid input. Both num1 and num2 must be integers."
         return str(int(num1) + int(num2))
+    except TypeError as e:
+        return "Error: Invalid operation. Unsupported operand type(s) for +: 'int' and 'str'"
     except Exception as e:
         return f"An error occurred: {str(e)}"@app.route("/value_error")
 def value_error():
