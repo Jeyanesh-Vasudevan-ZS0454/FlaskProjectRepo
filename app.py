@@ -71,8 +71,14 @@ def invalid_operation():
 def type_error():
     num1 = request.json.get("num1", 5)
     num2 = request.json.get("num2", 3)
-    return str(num1 + num2)   # TypeError if types mismatch
-
+    try:
+        num1 = int(num1) if isinstance(num1, str) and num1.isdigit() else float(num1) if isinstance(num1, str) and num1.replace('.', '', 1).isdigit() else num1
+        num2 = int(num2) if isinstance(num2, str) and num2.isdigit() else float(num2) if isinstance(num2, str) and num2.replace('.', '', 1).isdigit() else num2
+    except ValueError:
+        return "Error: Invalid numeric string format"
+    if not isinstance(num1, (int, float)) or not isinstance(num2, (int, float)):
+        return "Error: Both num1 and num2 must be numbers or numeric strings"
+    return str(num1 + num2)
 
 @app.route("/value_error", methods=["POST"])
 def value_error():
