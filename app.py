@@ -74,6 +74,8 @@ def type_error():
     try:
         num1 = request.args.get("num1", default=5, type=int)
         num2 = request.args.get("num2", default=3, type=int)
+        if not isinstance(num1, int) or not isinstance(num2, int):
+            return "Error: Invalid input. Both inputs must be integers."
         return str(num1 + num2)
     except TypeError as e:
         return "Error: Invalid operation. Unsupported operand type(s) for +: 'int' and 'str'"
