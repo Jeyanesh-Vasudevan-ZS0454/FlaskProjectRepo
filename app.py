@@ -1,4 +1,3 @@
-
 from flask import Flask, jsonify, request
 import sqlite3
 import traceback
@@ -8,12 +7,14 @@ import os
 app = Flask(__name__)
 DB_FILE = "errors_sqlite.db"
 
+
 # ---------- DB Helpers ----------
 def get_sqlite_conn(read_only=False):
     if read_only:
         # Use URI mode for read-only
         return sqlite3.connect(f"file:{DB_FILE}?mode=ro", uri=True)
     return sqlite3.connect(DB_FILE)
+
 
 def create_tables():
     con = get_sqlite_conn()
@@ -31,12 +32,14 @@ def create_tables():
     con.commit()
     con.close()
 
+
 class User:
     def __init__(self, name):
         self.name = name
 
     def get_name(self):
         return self.name
+
 
 def get_user_by_id(user_id):
     """Simulates fetching a user from a database.
@@ -46,47 +49,68 @@ def get_user_by_id(user_id):
     else:
         return None
 
+
 # Case 1: User found, no error
 
-# ---------- Sample Error Routes ----------
-@app.route("/null_reference")
-def null_reference():
-
-    user_id = request.args.get('user_id')
-    obj = get_user_by_id(user_id)
-    return obj.some_attr  # AttributeError
-
-@app.route("/index_out_of_range")
+@app.route("/index_out_of_range", methods=["POST"])
 def index_out_of_range():
-    arr = [1,2,3]
-    idx = request.args.get("num1", default=1)
-    return str(arr[idx])  # IndexError
+    arr = [1, 2, 3]
+    idx = request.json.get("num1", 1)   # default = 1
+    return str(arr[idx])  # IndexError if out of range
 
-@app.route("/invalid_operation")
+
+@app.route("/invalid_operation", methods=["POST"])
 def invalid_operation():
-    num1 = request.args.get("num1", default=5)
-    num2 = request.args.get("num2", default=3)
-    x = num1 / num2  # ZeroDivisionError
+    num1 = request.json.get("num1", 5)
+    num2 = request.json.get("num2", 3)
+    x = num1 / num2  # ZeroDivisionError if num2 = 0
     return str(x)
 
-@app.route("/type_error")
-def type_error():
-    num1 = request.args.get("num1", default=5)
-    num2 = request.args.get("num2", default=3)
 
-    return str(num1 + num2)
-    
-@app.route("/value_error")
+@app.route("/type_error", methods=["POST"])
+def type_error():
+    num1 = request.json.get("num1", 5)
+    num2 = request.json.get("num2", 3)
+    return str(num1 + num2)   # TypeError if types mismatch
+
+
+@app.route("/value_error", methods=["POST"])
 def value_error():
     try:
-        num1 = request.args.get("num1", default=5)
-        return int(num1)
+        num1 = request.json.get("num1", 5)
+        return str(int(num1))  # ValueError if not convertible
     except ValueError as e:
-        return jsonify({"error": type(e).__name__, "message": str(e), "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
+        return jsonify({
+            "error": type(e).__name__,
+            "message": str(e),
+            "endpoint": request.path,
+            "occurred_at": datetime.datetime.utcnow().isoformat()
+        }), 500
 
+
+def hit_api(inserted_id):
+    try:
+        import requests
+        import json
+        url = "http://localhost:8080/log/v1/submit"
+        payload = json.dumps({
+            "project_id": 1,
+            "error_id": inserted_id
+        })
+        headers = {'Content-Type': 'application/json'}
+        response = requests.request("POST", url, headers=headers, data=payload)
+    except Exception as e:
+        print(e)
 # ---------- Global Error Handler ----------
+from werkzeug.exceptions import HTTPException
+
 @app.errorhandler(Exception)
 def handle_exception(e):
+    # Skip HTTP exceptions (404, 405, etc.)
+    if isinstance(e, HTTPException):
+        return e
+
+    # This block handles only real runtime errors (API errors)
     exc_type = type(e).__name__
     message = str(e)
     stacktrace = traceback.format_exc()
@@ -99,8 +123,14 @@ def handle_exception(e):
         INSERT INTO error_logs (exception_type, message, stacktrace, occurred_at, endpoint)
         VALUES (?, ?, ?, ?, ?)
     """, (exc_type, message, stacktrace, occurred_at, endpoint))
+    inserted_id = cur.lastrowid
     con.commit()
     con.close()
+
+    print("Inserted row ID:", inserted_id)
+
+    # 🔥 Only call external API for API/runtime errors
+    hit_api(inserted_id)
 
     return jsonify({
         "error": exc_type,
@@ -108,6 +138,7 @@ def handle_exception(e):
         "endpoint": endpoint,
         "occurred_at": occurred_at.isoformat()
     }), 500
+
 
 # ---------- Endpoint to view logs ----------
 @app.route("/logs")
@@ -124,4 +155,3 @@ def get_logs():
 if __name__ == "__main__":
     create_tables()
     app.run(debug=True)
- 
