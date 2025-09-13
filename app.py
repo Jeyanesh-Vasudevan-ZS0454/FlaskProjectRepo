@@ -31,36 +31,58 @@ def create_tables():
     con.commit()
     con.close()
 
+class User:
+    def __init__(self, name):
+        self.name = name
+
+    def get_name(self):
+        return self.name
+
+def get_user_by_id(user_id):
+    """Simulates fetching a user from a database.
+    Returns a User object if found, otherwise None."""
+    if user_id == 1:
+        return User("Alice")
+    else:
+        return None
+
+# Case 1: User found, no error
+
 # ---------- Sample Error Routes ----------
 @app.route("/null_reference")
 def null_reference():
-    obj = None
+
+    user_id = request.args.get('user_id')
+    obj = get_user_by_id(user_id)
     return obj.some_attr  # AttributeError
 
 @app.route("/index_out_of_range")
 def index_out_of_range():
     arr = [1,2,3]
-    return str(arr[5])  # IndexError
+    idx = request.args.get("num1", default=1)
+    return str(arr[idx])  # IndexError
 
 @app.route("/invalid_operation")
 def invalid_operation():
-    x = 10 / 0  # ZeroDivisionError
+    num1 = request.args.get("num1", default=5)
+    num2 = request.args.get("num2", default=3)
+    x = num1 / num2  # ZeroDivisionError
     return str(x)
 
 @app.route("/type_error")
 def type_error():
-    num1 = 5
-    num2 = "hello"
-    if isinstance(num1, int) and isinstance(num2, int):
-        return str(num1 + num2)
-    elif isinstance(num1, str) and isinstance(num2, str):
-        return num1 + num2
-    else:
-        return "Error: Cannot perform operation on different data types"
+    num1 = request.args.get("num1", default=5)
+    num2 = request.args.get("num2", default=3)
 
+    return str(num1 + num2)
+    
 @app.route("/value_error")
 def value_error():
-    return int("not_a_number")  # ValueError
+    try:
+        num1 = request.args.get("num1", default=5)
+        return int(num1)
+    except ValueError as e:
+        return jsonify({"error": type(e).__name__, "message": str(e), "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
 
 # ---------- Global Error Handler ----------
 @app.errorhandler(Exception)
@@ -98,6 +120,8 @@ def get_logs():
     con.close()
     return jsonify([dict(row) for row in rows])
 
+
 if __name__ == "__main__":
     create_tables()
     app.run(debug=True)
+ 
