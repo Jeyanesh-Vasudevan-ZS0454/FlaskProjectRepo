@@ -72,11 +72,9 @@ def invalid_operation():
 @app.route("/type_error")
 def type_error():
     try:
-        num1 = request.args.get("num1", default=5)
-        num2 = request.args.get("num2", default=3)
-        if not num1.isdigit() or not num2.isdigit():
-            return "Error: Invalid input. Both num1 and num2 must be integers."
-        return str(int(num1) + int(num2))
+        num1 = request.args.get("num1", default=5, type=int)
+        num2 = request.args.get("num2", default=3, type=int)
+        return str(num1 + num2)
     except TypeError as e:
         return "Error: Invalid operation. Unsupported operand type(s) for +: 'int' and 'str'"
     except Exception as e:
