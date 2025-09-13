@@ -71,8 +71,9 @@ def invalid_operation():
 def type_error():
     num1 = request.json.get("num1", 5)
     num2 = request.json.get("num2", 3)
-    return str(num1 + num2)   # TypeError if types mismatch
-
+    if isinstance(num1, str) or isinstance(num2, str):
+        return "Error: Both inputs must be numbers"
+    return str(num1 + num2)
 
 @app.route("/value_error", methods=["POST"])
 def value_error():
