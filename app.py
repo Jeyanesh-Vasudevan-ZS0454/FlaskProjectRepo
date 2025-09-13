@@ -56,7 +56,7 @@ def null_reference():
     obj = get_user_by_id(user_id)
     if obj is None:
         return jsonify({"error": "TypeError", "message": "Object is None", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-    return obj.some_attr  # AttributeError
+    return obj.get_name()
 
 @app.route("/index_out_of_range")
 def index_out_of_range():
@@ -64,7 +64,7 @@ def index_out_of_range():
     idx = request.args.get("num1", default=1, type=int)
     if idx < 0 or idx >= len(arr):
         return jsonify({"error": "IndexError", "message": "Index out of range", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-    return str(arr[idx])  # IndexError
+    return str(arr[idx])  
 
 @app.route("/invalid_operation")
 def invalid_operation():
@@ -72,18 +72,20 @@ def invalid_operation():
     num2 = request.args.get("num2", default=3)
     if num2 == '0':
         return jsonify({"error": "ZeroDivisionError", "message": "Cannot divide by zero", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-    x = float(num1) / float(num2)  # ZeroDivisionError
+    num2 = float(num2)
+    if num2 == 0:
+        return jsonify({"error": "ZeroDivisionError", "message": "Cannot divide by zero", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
+    x = float(num1) / num2  
     return str(x)
 
 @app.route("/type_error")
 def type_error():
     num1 = request.args.get("num1", default=5)
     num2 = request.args.get("num2", default=3)
-    
     try:
         result = float(num1) + float(num2)
         return str(result)
-    except ValueError:
+    except (ValueError, TypeError):
         return jsonify({"error": "TypeError", "message": "Unsupported operand type(s) for +", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
 
 @app.route("/value_error")
