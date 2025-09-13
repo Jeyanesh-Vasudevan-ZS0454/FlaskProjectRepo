@@ -54,41 +54,29 @@ def null_reference():
 
     user_id = request.args.get('user_id')
     obj = get_user_by_id(user_id)
-    if obj is None:
-        return jsonify({"error": "TypeError", "message": "Object is None", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-    return obj.get_name()
+    return obj.some_attr  # AttributeError
 
 @app.route("/index_out_of_range")
 def index_out_of_range():
     arr = [1,2,3]
-    idx = request.args.get("num1", default=1, type=int)
-    if idx < 0 or idx >= len(arr):
-        return jsonify({"error": "IndexError", "message": "Index out of range", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-    return str(arr[idx])  
+    idx = request.args.get("num1", default=1)
+    return str(arr[idx])  # IndexError
 
 @app.route("/invalid_operation")
 def invalid_operation():
     num1 = request.args.get("num1", default=5)
     num2 = request.args.get("num2", default=3)
-    if num2 == '0':
-        return jsonify({"error": "ZeroDivisionError", "message": "Cannot divide by zero", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-    num2 = float(num2)
-    if num2 == 0:
-        return jsonify({"error": "ZeroDivisionError", "message": "Cannot divide by zero", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-    x = float(num1) / num2  
+    x = num1 / num2  # ZeroDivisionError
     return str(x)
 
 @app.route("/type_error")
 def type_error():
-    num1 = request.args.get("num1", default=5)
-    num2 = request.args.get("num2", default=3)
     try:
-        result = float(num1) + float(num2)
-        return str(result)
-    except (ValueError, TypeError):
-        return jsonify({"error": "TypeError", "message": "Unsupported operand type(s) for +", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-
-@app.route("/value_error")
+        num1 = int(request.args.get("num1", default=5))
+        num2 = int(request.args.get("num2", default=3))
+        return str(num1 + num2)
+    except ValueError:
+        return "Error: Invalid input. Both num1 and num2 must be integers."@app.route("/value_error")
 def value_error():
     try:
         num1 = request.args.get("num1", default=5)
@@ -132,28 +120,8 @@ def get_logs():
     con.close()
     return jsonify([dict(row) for row in rows])
 
-# test case 
-@app.route("/test_null")
-def test_null():
-    return jsonify({"error": "TypeError", "message": "Object is None", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-
-@app.route("/test_index")
-def test_index():
-    return jsonify({"error": "IndexError", "message": "Index out of range", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-
-@app.route("/test_zero")
-def test_zero():
-    return jsonify({"error": "ZeroDivisionError", "message": "Cannot divide by zero", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-
-@app.route("/test_type")
-def test_type():
-    return jsonify({"error": "TypeError", "message": "Unsupported operand type(s) for +", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-
-@app.route("/test_value")
-def test_value():
-    return jsonify({"error": "ValueError", "message": "Invalid value", "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
-
 
 if __name__ == "__main__":
     create_tables()
     app.run(debug=True)
+ 
