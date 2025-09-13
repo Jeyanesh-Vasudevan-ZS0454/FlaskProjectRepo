@@ -72,13 +72,13 @@ def invalid_operation():
 @app.route("/type_error")
 def type_error():
     try:
-        num1 = int(request.args.get("num1", default=5))
-        num2 = int(request.args.get("num2", default=3))
-        return str(num1 + num2)
-    except ValueError:
-        return "Error: Invalid input. Both num1 and num2 must be integers."
-    except TypeError:
-        return "Error: Invalid operation. Cannot add integer and string."@app.route("/value_error")
+        num1 = request.args.get("num1", default=5)
+        num2 = request.args.get("num2", default=3)
+        if not num1.isdigit() or not num2.isdigit():
+            return "Error: Invalid input. Both num1 and num2 must be integers."
+        return str(int(num1) + int(num2))
+    except Exception as e:
+        return f"An error occurred: {str(e)}"@app.route("/value_error")
 def value_error():
     try:
         num1 = request.args.get("num1", default=5)
