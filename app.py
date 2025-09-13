@@ -59,10 +59,11 @@ def null_reference():
 @app.route("/index_out_of_range")
 def index_out_of_range():
     arr = [1,2,3]
-    idx = request.args.get("num1", default=1)
-    return str(arr[idx])  # IndexError
-
-@app.route("/invalid_operation")
+    idx = int(request.args.get("num1", default=1))
+    if idx < len(arr):
+        return str(arr[idx])
+    else:
+        return "Error: Index out of range"@app.route("/invalid_operation")
 def invalid_operation():
     num1 = request.args.get("num1", default=5)
     num2 = request.args.get("num2", default=3)
