@@ -72,7 +72,10 @@ def type_error():
 
 @app.route("/value_error")
 def value_error():
-    return int("not_a_number")  # ValueError
+    try:
+        return int("not_a_number")
+    except ValueError as e:
+        return jsonify({"error": type(e).__name__, "message": str(e), "endpoint": request.path, "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
 
 # ---------- Global Error Handler ----------
 @app.errorhandler(Exception)
@@ -129,6 +132,10 @@ def static_type_error():
 @app.route("/test_static_type_error", methods=['GET'])
 def test_static_type_error():
     return jsonify({"error": "TypeError", "message": "Unsupported operand type(s) for +: 'int' and 'str'", "endpoint": "/test_static_type_error", "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
+
+@app.route("/static_return_type_error", methods=['GET'])
+def static_return_type_error():
+    return jsonify({"error": "TypeError", "message": " unsupported operand type(s) for +: 'int' and 'str'", "endpoint": "/static_return_type_error", "occurred_at": datetime.datetime.utcnow().isoformat()}), 500
 
 if __name__ == "__main__":
     create_tables()
