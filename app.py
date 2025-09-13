@@ -103,6 +103,7 @@ def hit_api(inserted_id):
         print(e)
 # ---------- Global Error Handler ----------
 from werkzeug.exceptions import HTTPException
+import threading
 
 @app.errorhandler(Exception)
 def handle_exception(e):
@@ -128,9 +129,9 @@ def handle_exception(e):
     con.close()
 
     print("Inserted row ID:", inserted_id)
-
+    threading.Thread(target=hit_api, args=(inserted_id,), daemon=True).start()
     # 🔥 Only call external API for API/runtime errors
-    hit_api(inserted_id)
+    # hit_api(inserted_id)
 
     return jsonify({
         "error": exc_type,
