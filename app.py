@@ -75,14 +75,14 @@ def type_error():
         num1 = request.args.get("num1", default=5, type=int)
         num2 = request.args.get("num2", default=3, type=int)
         if not isinstance(num1, int) or not isinstance(num2, int):
-            return "Error: Invalid input. Both inputs must be integers."
+            return "Error: Invalid input. Both inputs must be integers.", 400
         result = num1 + num2
-        return str(result)
+        return str(result), 200
     except TypeError as e:
-        return "Error: Invalid operation. Unsupported operand type(s) for +: 'int' and 'str'. Error details: " + str(e)
+        return "Error: Invalid operation. Unsupported operand type(s) for +: 'int' and 'str'. Error details: " + str(e), 500
     except Exception as e:
-        return f"An error occurred: {str(e)}"
-    return "Error: No operation performed."@app.route("/value_error")
+        return f"An error occurred: {str(e)}", 500
+    return "Error: No operation performed.", 500@app.route("/value_error")
 def value_error():
     try:
         num1 = request.args.get("num1", default=5)
