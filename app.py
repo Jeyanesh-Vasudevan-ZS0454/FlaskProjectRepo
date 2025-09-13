@@ -136,8 +136,12 @@ def invalid_operation():
 def type_error():
     num1 = request.json.get("num1", 5)
     num2 = request.json.get("num2", 3)
-    return str(num1 + num2)   # TypeError if types mismatch
-
+    try:
+        return str(int(num1) + int(num2)), 200
+    except ValueError:
+        return "Error: Both num1 and num2 must be numeric", 400
+    except Exception as e:
+        return str(e), 500
 
 @app.route("/value_error", methods=["POST"])
 def value_error():
