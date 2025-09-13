@@ -78,8 +78,8 @@ def type_error():
             return "Error: Invalid input. Both inputs must be integers."
         result = num1 + num2
         return str(result)
-    except TypeError:
-        return "Error: Invalid operation. Unsupported operand type(s) for +: 'int' and 'str'"
+    except TypeError as e:
+        return "Error: Invalid operation. Unsupported operand type(s) for +: 'int' and 'str'. Error details: " + str(e)
     except Exception as e:
         return f"An error occurred: {str(e)}"@app.route("/value_error")
 def value_error():
