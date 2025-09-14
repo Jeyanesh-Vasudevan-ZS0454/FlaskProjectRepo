@@ -140,9 +140,9 @@ def type_error():
     try:
         num1 = int(num1)
         num2 = int(num2)
-        return str(num1 + num2), 200
     except ValueError:
         return "Error: Both num1 and num2 must be integers.", 400
+    return str(num1 + num2), 200
 
 @app.route("/value_error", methods=["POST"])
 def value_error():
