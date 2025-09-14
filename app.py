@@ -153,7 +153,10 @@ def type_error():
         return "An unexpected error occurred: {}".format(str(e)), 500
     if not isinstance(num1, int) or not isinstance(num2, int):
         return "Error: Invalid input type for num1 or num2.", 400
-    return str(num1 + num2), 200
+    result = num1 + num2
+    if not isinstance(result, int):
+        return "Error: The result of the operation is not an integer.", 500
+    return str(result), 200
 
 @app.route("/value_error", methods=["POST"])
 def value_error():
