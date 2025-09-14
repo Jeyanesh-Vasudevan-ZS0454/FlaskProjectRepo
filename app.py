@@ -121,8 +121,8 @@ def get_user_by_id(user_id):
 def index_out_of_range():
     arr = [1, 2, 3]
     idx = request.json.get("num1", 1)   # default = 1
-    if idx < 0 or idx >= len(arr):
-        return "Error: Index out of range"
+    if not isinstance(idx, int) or idx < 0 or idx >= len(arr):
+        return "Error: Index is not a valid integer or out of range"
     return str(arr[idx])
 
 @app.route("/invalid_operation", methods=["POST"])
