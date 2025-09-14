@@ -146,14 +146,15 @@ def type_error():
         num1 = int(num1)
         num2 = int(num2)
     except ValueError:
-        return "Error: Both num1 and num2 must be integers.", 400
+        return "Error: Both num1 and num2 must be integers."
     except TypeError:
-        return "Error: Invalid input type for num1 or num2.", 400
+        return "Error: Invalid input type for num1 or num2."
     except Exception as e:
-        return "An unexpected error occurred: {}".format(str(e)), 500
+        return "An unexpected error occurred: {}".format(str(e))
     if not isinstance(num1, int) or not isinstance(num2, int):
-        return "Error: Invalid input type for num1 or num2.", 400
-    return str(num1 + num2), 200
+        return "Error: Invalid input type for num1 or num2."
+    result = num1 + num2
+    return str(result)
 
 @app.route("/value_error", methods=["POST"])
 def value_error():
