@@ -121,8 +121,9 @@ def get_user_by_id(user_id):
 def index_out_of_range():
     arr = [1, 2, 3]
     idx = request.json.get("num1", 1)   # default = 1
-    return str(arr[idx])  # IndexError if out of range
-
+    if not isinstance(idx, int) or idx < 0 or idx >= len(arr):
+        return "Error: Index out of range or invalid input"
+    return str(arr[idx])
 
 @app.route("/invalid_operation", methods=["POST"])
 def invalid_operation():
@@ -137,11 +138,11 @@ def type_error():
     num1 = request.json.get("num1", 5)
     num2 = request.json.get("num2", 3)
     try:
-        return str(int(num1) + int(num2))
+        num1 = int(num1)
+        num2 = int(num2)
+        return str(num1 + num2), 200
     except ValueError:
-        return "Error: Both 'num1' and 'num2' must be numeric."
-    except Exception as e:
-        return f"An error occurred: {str(e)}"
+        return "Error: Both num1 and num2 must be integers.", 400
 
 @app.route("/value_error", methods=["POST"])
 def value_error():
