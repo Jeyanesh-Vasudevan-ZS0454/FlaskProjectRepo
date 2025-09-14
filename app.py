@@ -137,10 +137,18 @@ def invalid_operation():
 def type_error():
     num1 = request.json.get("num1", 5)
     num2 = request.json.get("num2", 3)
-    if isinstance(num1, int) and isinstance(num2, int):
-        return str(num1 + num2), 200
-    else:
+    try:
+        num1 = int(num1)
+        num2 = int(num2)
+    except ValueError:
         return "Error: Both num1 and num2 must be integers.", 400
+    except TypeError:
+        return "Error: Invalid input type for num1 or num2.", 400
+    except Exception as e:
+        return "An unexpected error occurred: {}".format(str(e)), 500
+    if not isinstance(num1, int) or not isinstance(num2, int):
+        return "Error: Invalid input type for num1 or num2.", 400
+    return str(num1 + num2), 200
 
 @app.route("/value_error", methods=["POST"])
 def value_error():
